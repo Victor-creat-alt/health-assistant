@@ -1,230 +1,332 @@
-# Project Overview
+# Health Assistant CLI
 
-## Getting started with a C++ Health Assistant Command Line Application integrated with Postgresql
-# This repository contains a C++ console application that demonstrates Basic CRUD Operations on patient
-# records, backed by a PostgreSQL database. The project uses  libpqxx for database connectivity and 
-# nlohmann-json for handling structured data
+A comprehensive C++ command-line application for managing patient health records with integrated PostgreSQL database support. This application provides a complete health management system covering nutrition, fitness, mental health, and skincare tracking.
 
-# The Application functions as a simple health assistant application. It allows users to:
-# 1: Add a new patient record with details on nutrition, fitness, mental status and skincare
-# 2: Retrieve Patient Information by their ID
-# 3: Update an Existing patient data
-# 4: Delete an existing Patient Record
-# 5: List all patients stored in the Database
+## 🚀 Features
 
-# The Patient's health data(nutrition, fitness e.t.c) is stored in a structured JSON Format within a single JSONB column in the PostgreSQL  table, a modern approach for data modelling
+- **Patient Management**: Complete CRUD operations for patient records
+- **Health Tracking**: Monitor nutrition, fitness, mental status, and skincare
+- **Database Integration**: PostgreSQL backend with JSONB support for structured health data
+- **Interactive CLI**: User-friendly command-line interface
+- **Data Validation**: Built-in validation for health metrics and patient data
+- **Cross-Platform**: Supports Windows, Linux, and macOS
 
-# Prerequisites
-# PostgreSQL : Must be installed and running in your system
-# C++ compiler: A compiler that supports C++ 11 OR newer
-# vcpkg: Recommended for easy package/library management
+## 🔧 Prerequisites
 
-# Setup and Installation
-# 1: Clone the Repository
-#  git clone <repository_url>
-# cd <repository_name>
+Before you begin, ensure you have the following installed:
 
-# Install PostgreSQL on All Platforms
-# Windows:  
-  Download installer = Go to the official PostgreSQL download page and get the interactive installer by Enterprise DB. This is the simplest way to install PostgreSQL on windows
-  
-  Run the Installer
-  - The installer will guide one through the process. Choose the components to be installed (PostgreSQL  Server, pgAdmin, Stack Builder)
-  - Set a strong password for the postgres superuser
-  - Specify the port number (default: 5432)
-  - Wait for complete installation
+- **PostgreSQL** (version 12 or higher)
+- **C++ Compiler** with C++11 support or newer
+- **vcpkg** (recommended for package management)
+- **Git**
 
-  Start the server: The Installer typically sets up the PostgresSQL as a Window Service, so it will start automatically. You can manage it in the Service Control Panel
+## 🛠️ Installation
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/Victor-creat-alt/health-assistant.git
+cd health-assistant
+```
+
+### 2. Install PostgreSQL
+
+## Windows
+
+1. Download the PostgreSQL installer from the [official website](https://www.postgresql.org/download/windows/)
+2. Run the installer and follow the setup wizard
+3. Set a strong password for the `postgres` superuser
+4. Use the default port (5432)
+5. The service will start automatically
+
+### Linux (Ubuntu/Debian)
+
+```bash
+sudo apt update
+sudo apt install postgresql postgresql-contrib
+sudo systemctl start postgresql
+sudo systemctl enable postgresql
+```
+
+### Linux (RedHat/Fedora)
+
+```bash
+sudo dnf install postgresql-server
+sudo postgresql-setup --initdb
+sudo systemctl start postgresql
+sudo systemctl enable postgresql
+```
+
+### macOS
+
+```bash
+# Using Homebrew
+brew install postgresql
+brew services start postgresql
+```
+
+### 3. Install Development Tools
+
+#### Windows Platform
+
+1. Install MinGW-w64 from the [official site](https://www.mingw-w64.org/)
+2. Add MinGW-w64 bin directory to your system PATH
+3. Install Visual Studio Code with C/C++ extensions
+
+#### Linux
+
+```bash
+# Ubuntu/Debian
+sudo apt update && sudo apt install build-essential
+
+# RedHat/Fedora
+sudo dnf groupinstall "Development Tools"
+```
+
+## macOS Platform
+
+```bash
+xcode-select --install
+```
+
+### 4. Install Dependencies with vcpkg
+
+#### Setup vcpkg
+
+```bash
+git clone https://github.com/microsoft/vcpkg.git
+cd vcpkg
+
+# Windows
+.\bootstrap-vcpkg.bat
+.\vcpkg integrate install
+
+# Linux/macOS
+./bootstrap-vcpkg.sh
+```
+
+#### Install Required Libraries
+
+```bash
+# Windows
+.\vcpkg install libpq:x64-windows
+.\vcpkg install libpqxx:x64-windows
+.\vcpkg install nlohmann-json:x64-windows
 
 # Linux
-   1) Update Package Lists:
-   Debian/Ubuntu: sudo apt update
-   RedHat/ Fedora: sudo dnf install postgresql-server
+./vcpkg install libpq:x64-linux
+./vcpkg install libpqxx:x64-linux
+./vcpkg install nlohmann-json:x64-linux
 
-   2) Install PostgreSQL
-   Debian/Ubuntu: sudo apt install postgresql postgresql-contrib
-   RedHat/Fedora: sudo dnf install postgresql-server
+# macOS
+./vcpkg install libpq:x64-osx
+./vcpkg install libpqxx:x64-osx
+./vcpkg install nlohmann-json:x64-osx
+```
 
-   3) Initialize Database(if needed): On some distributions you may need to manually initialize the database cluster
-   Debian/Ubuntu: No action needed, the package handles this
-   RedHat/Fedora : sudo postgresql-setup --initdb
+## 🗄️ Database Setup
 
-   4) Start and enable the service:
-     sudo systemctl start postgresql
-     sudo systemctl enable postgresql
+### 1. Create Database and User
 
+```sql
+-- Connect as postgres superuser
+sudo -u postgres psql
 
-# macOS   
-    1) Homebrew(Recommended) : Install it from brew.sh
-    2) Install PostgreSQL: brew install postgresql
-    3) Start the Service: brew services start postgresql   
+-- Create user and database
+CREATE USER health WITH PASSWORD '2005';
+CREATE DATABASE health_assistant WITH OWNER health;
 
+-- Grant privileges
+GRANT ALL PRIVILEGES ON DATABASE health_assistant TO health;
+```
 
-# Installing  C++ compilers and Visual Studio Code
-1. Windows
- . Install MinGW-w64:
-   Download the MinGW-w64 installer from the official site
-   During installation, select x86_64 architecture
-   Add the bin directory of MinGW-w64 installation to system's path environment variable
+### 2. Create Patient Table
 
- . Visual Studio Code
-   Download and install VSCode
-   Go to the extension market place and install C/C++ extension from Microsoft
-   Install the C++ intellisense extension for code completion and navigation
+```sql
+-- Connect to the health_assistant database
+\c health_assistant
 
-2. Linux
-   Install g++
-   Debian/Ubuntu sudo apt update && sudo apt install build-essential(This installs g++ and other tools)
+-- Create the patients table
+CREATE TABLE patients (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    age INT,
+    height DOUBLE PRECISION,
+    condition VARCHAR(255),
+    nutrition JSONB,
+    fitness JSONB,
+    mental_status JSONB,
+    skincare JSONB
+);
 
-  . Visual Studio Code
-   Download the .deb or .rpm package from the VSCode website and install it
-   Install the C/C++ and C++ intellisense extensions
+-- Grant table permissions
+GRANT ALL PRIVILEGES ON patients TO health;
+GRANT USAGE ON SEQUENCE patients_id_seq TO health;
 
- 3. MacOS
-    Install XCode Command Line Tool
-    Open terminal and run xcode-select --install. This installs g++ and clang++
-    compilers
+-- Verify table creation
+\dt
+```
 
-    Visual Studio Code
-    Download and install Visual Studio Code from the website
-    Install the C/C++ and C++ intellisense extensions
+### 3. Verify Database Connection
 
+```bash
+# Test connection
+psql -h localhost -U health -d health_assistant
+```
 
-# PostgreSQL Compatibility and C++ Compatibility
-- The most popular library is libpqxx
+## 🔨 Building the Project
 
-Installing libpqxx: Use vcpkg
--------------------------------------------------------------------------------------------------------
-Windows: 
-# Install git(if not already installed) vcpkg is hosted in github, Git clone the repository
-# git clone https://github.com/microsoft/vcpkg.git
-# cd vcpkg
+Navigate to the source directory and compile:
 
-Run the Bootstrap Script to compile the vcpkg executable
-# .\bootstrap-vcpkg.bat
+```bash
+cd cli-health-assistant/src
 
-Integrate with Visual Studio
-# .\vcpkg integrate install
+# Compile the application
+g++ -o health_assistant main.cpp patient.cpp db_postgres.cpp nutrition.cpp fitness.cpp mental_status.cpp skincare.cpp utils.cpp -I/usr/include/postgresql -lpqxx -lpq
 
-# Add vcpkg to SYSTEM Path
-# Open System Properties -> Environment Variables
-# Add the full path to the vcpkg folder
+# Make executable (Linux/macOS)
+chmod +x health_assistant
+```
 
-To install library client
-# .\vcpkg install libpq:x64-windows - installs static/dynamic libraries and headers to connect with PostgreSQL from C/C++
+## 🚀 Usage
 
-Install the C++ wrapper(Optional using C++)
-# .\vcpkg install libpqxx:x64-windows
--------------------------------------------------------------------------------------------------------
+Run the compiled application:
 
--------------------------------------------------------------------------------------------------------
-Linux
-1) Install Git and Build tools
-# sudo apt update
-# sudo apt install git build-essential curl zip unzip
+```bash
+./health_assistant
+```
 
-2) Clone vcpkg
-# git clone https://github.com/microsoft/vcpkg.git
-# cd vcpkg
+### Menu Options
 
-3) Bootstrap vcpkg
-# ./bootstrap-vcpkg.sh
+The application provides an interactive menu with the following options:
 
-4) Install Postgre SQL Client Library
-# ./vcpkg install libpq:x64-linux
+1. **Add Patient** - Create a new patient record with comprehensive health data
+2. **View Patient Details** - Retrieve and display patient information by ID
+3. **Update Patient Information** - Modify existing patient records
+4. **Delete Patient Record** - Remove a patient from the database
+5. **List All Patients** - Display all patients in the system
+6. **Exit** - Close the application
 
-5) Install libpqxx(C++ wrapper)
-# ./vcpkg install libpqxx:x64-linux
--------------------------------------------------------------------------------------------------------
+### Example Usage
 
--------------------------------------------------------------------------------------------------------
-MacOS
-1) Install XCode Command Tool
-# xcode-select --install
+``` Health Assitant
+Health Assistant Menu:
+1. Add Patient
+2. View Patient Details
+3. Update Patient Information
+4. Delete Patient record
+5. List All Patients
+6. Exit
+Enter your choice: 1
 
-2) Install git
-# brew install git
+Enter patient ID: 1
+Enter patient name: John Doe
+Enter patient age: 30
+Enter patient height (in cm): 175
+Enter mental condition (e.g Depression, Anxiety): None
 
-3) CLone and bootstrap vcpkg
-# git clone https://github.com/microsoft/vcpkg.git
-# cd vcpkg
-# ./bootstrap-vcpkg.sh
+--- Enter Nutrition Details ---
+Enter daily calories: 2000
+Enter daily protein (g): 150
+Enter daily carbs (g): 250
+Enter daily fats (g): 70
+Enter diet type (e.g. Vegetarian, Vegan, Keto): Balanced
 
-4) Install PostgreSQL library client
-# ./vcpkg install libpq:x64-osx
+--- Enter Fitness Details ---
+Enter steps per day: 10000
+Enter exercise minutes per day: 60
+Enter activity type (e.g Running, Cycling): Running
+Enter fitness goals (e.g Weight Loss, Muscle Gain, Maintenance): Maintenance
+Enter workout routine (e.g Cardio, Strength Training): Cardio
 
-5) Install libpqxx
-# ./vcpkg install libpqxx:x64-osx
+--- Enter Mental Status Details ---
+Enter mood level (1-10): 8
+Enter stress level (Low, Medium, High): Low
+Enter sleep quality (Poor, Average, Good): Good
 
--- To install  nlohmann-json(handle json objects)
-# vcpkg install nlohmann-json:x64-windows
+--- Enter Skin Care Details ---
+Enter skin type (e.g Oily, Dry, Combination): Normal
+Enter Skin concerns (e.g Acne, Aging, Sensitivity): None
+Enter skin care routine (e.g Cleansing, Moisturization): Daily
+Enter products used (e.g Cleanser, Toner, Moisturizer): Cleanser
+Enter skin care goals (e.g Clear Skin, Hydration, Anti-Aging): Maintenance
 
-For linux and MacOS use:
-# ./vcpkg install nlohmann-json:x64-linux
-# ./vcpkg install nlohmann-json:x64-osx
+Patient added successfully.
+```
 
-------------------------------------------------------------------------------------------------------
+## 📁 Project Structure
 
-# Create a PostgreSQL Database(Navigate to the cli-health assistant)
-# i) Login in as the default PostgreSQL superuser(postgres)
-# sudo -u postgres psql 
+``` Folder structure
+health-assistant/
+├── README.md
+├── Command Line Application.pdf
+└── cli-health-assistant/
+    └── src/
+        ├── main.cpp              # Main application entry point
+        ├── patient.h/cpp         # Patient data structure and operations
+        ├── db_postgres.h/cpp     # PostgreSQL database operations
+        ├── nutrition.h/cpp       # Nutrition tracking functionality
+        ├── fitness.h/cpp         # Fitness monitoring features
+        ├── mental_status.h/cpp   # Mental health status tracking
+        ├── skincare.h/cpp        # Skincare routine management
+        ├── utils.h/cpp           # Utility functions
+        └── CMakeList.txt         # Build configuration
+```
 
-# ii) Create a New Role
-# Create the role: CREATE USER health WITH PASSWORD '2005';
+## 🏗️ Architecture
 
-# Create the database: CREATE DATABASE health_assistant WITH OWNER health
+The application follows a modular design pattern:
 
--- Granting Priviledge to the USER
-# GRANT ALL PRIVILEGES ON patients TO health;
+- **Database Layer**: PostgreSQL with libpqxx for C++ integration
+- **Data Models**: Structured C++ classes for different health aspects
+- **Business Logic**: Separate modules for each health domain
+- **User Interface**: Interactive command-line interface
+- **Data Storage**: JSONB format for flexible health data storage
 
--- Grant USAGE on the sequence for the 'id' column to the 'health' user
-# GRANT USAGE ON SEQUENCE patients_id_seq TO health;
+## 🤝 Contributing
 
--- verify Permissions
-# \z patients
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-Connect to the new database
-# \c health_assistant
+## 📝 License
 
-# Create tables: Patient table: CREATE TABLE patients ( id SERIAL PRIMARY KEY, name VARCHAR(255) NOT NULL, age INT, height DOUBLE PRECISION, condition VARCHAR(255), nutrition JSONB, fitness JSONB, mental_status JSONB, skincare JSONB );
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-Verify the table creation: \dt
+## 🐛 Troubleshooting
 
-To access the database:
-# sudo -u postgres psql -d health_assistant
+### Common Issues
 
-To exit the database
-# \quit
+1. **Database Connection Failed**
+   - Verify PostgreSQL is running
+   - Check connection parameters in `main.cpp`
+   - Ensure user `health` has proper permissions
 
-# CONNECTING TO THE DATABASE USING POSTGRESQL EXTENSION FROM VISUAL STUDIO CODE(Graphical User Interface)
-# The PostgreSQL extension for Visual Studio Code is a powerful tool:
-# 1. Install the extension in VSCode: Go to the extension tab and install PostgreSQL by microsoft(Database Client)
+2. **Compilation Errors**
+   - Verify all dependencies are installed via vcpkg
+   - Check compiler version supports C++11
+   - Ensure PostgreSQL headers are in include path
 
-# Connect to the Database
-# Click the PostgreSQL icon in the Activity Bar in the Left
-# Click Add connection button
-# Enter connection details(host, username, password, database name)
+3. **Runtime Errors**
+   - Check database exists and is accessible
+   - Verify table structure matches application expectations
+   - Ensure proper permissions on database objects
 
+### Getting Help
 
+- Check the [Issues](https://github.com/Victor-creat-alt/health-assistant/issues) page
+- Review the documentation in `Command Line Application.pdf`
+- Ensure all prerequisites are properly installed
 
--------------------------------------------------------------------------------------------------------
-Compile the Project
-Navigate to the src folder
-# Use the following command: g++ -o health_assistant main.cpp patient.cpp db_postgres.cpp nutrition.cpp fitness.cpp mental_status.cpp skincare.cpp utils.cpp -I/usr/include/postgresql -lpqxx -lpq
+## 📊 Health Data Structure
 
-# 2. Run the command line application and perform operations through the CLI
-# Execute the compiled program by running the following: 
-  ./health_assistant
+The application stores comprehensive health data in JSONB format:
 
+- **Nutrition**: Calories, macronutrients, diet type
+- **Fitness**: Daily steps, exercise duration, activity types, goals
+- **Mental Status**: Mood levels, stress indicators, sleep quality
+- **Skincare**: Skin type, concerns, routines, products used
 
-  
-
-
-
-
-
-
-
-
-
-
+This flexible structure allows for easy extension and modification of health tracking parameters.
