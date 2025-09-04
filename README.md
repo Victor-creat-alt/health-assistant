@@ -1,205 +1,230 @@
-⚕️ C++ Health Assistant Command Line Application
-This repository contains a C++ console application that demonstrates Basic CRUD (Create, Read, Update, Delete) Operations on patient records, backed by a PostgreSQL database. The project uses libpqxx for database connectivity and nlohmann-json for handling structured data.
+# Project Overview
 
-🎯 Project Overview
-This application functions as a simple health assistant, allowing users to manage patient data directly from the command line. It supports the following operations:
+## Getting started with a C++ Health Assistant Command Line Application integrated with Postgresql
+# This repository contains a C++ console application that demonstrates Basic CRUD Operations on patient
+# records, backed by a PostgreSQL database. The project uses  libpqxx for database connectivity and 
+# nlohmann-json for handling structured data
 
-Add a new patient record with details on nutrition, fitness, mental status, and skincare.
+# The Application functions as a simple health assistant application. It allows users to:
+# 1: Add a new patient record with details on nutrition, fitness, mental status and skincare
+# 2: Retrieve Patient Information by their ID
+# 3: Update an Existing patient data
+# 4: Delete an existing Patient Record
+# 5: List all patients stored in the Database
 
-Retrieve a patient's information using their ID.
+# The Patient's health data(nutrition, fitness e.t.c) is stored in a structured JSON Format within a single JSONB column in the PostgreSQL  table, a modern approach for data modelling
 
-Update an existing patient's data.
+# Prerequisites
+# PostgreSQL : Must be installed and running in your system
+# C++ compiler: A compiler that supports C++ 11 OR newer
+# vcpkg: Recommended for easy package/library management
 
-Delete an existing patient record.
+# Setup and Installation
+# 1: Clone the Repository
+#  git clone <repository_url>
+# cd <repository_name>
 
-List all patients currently in the database.
+# Install PostgreSQL on All Platforms
+# Windows:  
+  Download installer = Go to the official PostgreSQL download page and get the interactive installer by Enterprise DB. This is the simplest way to install PostgreSQL on windows
+  
+  Run the Installer
+  - The installer will guide one through the process. Choose the components to be installed (PostgreSQL  Server, pgAdmin, Stack Builder)
+  - Set a strong password for the postgres superuser
+  - Specify the port number (default: 5432)
+  - Wait for complete installation
 
-A modern approach to data modeling is used, where the patient's health data (nutrition, fitness, etc.) is stored in a structured JSONB column within the PostgreSQL table.
+  Start the server: The Installer typically sets up the PostgresSQL as a Window Service, so it will start automatically. You can manage it in the Service Control Panel
 
-🚀 Getting Started
-Prerequisites
-To get the application up and running, you'll need the following installed on your system:
+# Linux
+   1) Update Package Lists:
+   Debian/Ubuntu: sudo apt update
+   RedHat/ Fedora: sudo dnf install postgresql-server
 
-PostgreSQL: A running instance of the PostgreSQL database server.
+   2) Install PostgreSQL
+   Debian/Ubuntu: sudo apt install postgresql postgresql-contrib
+   RedHat/Fedora: sudo dnf install postgresql-server
 
-C++ Compiler: A compiler that supports C++11 or newer (e.g., g++ or clang++).
+   3) Initialize Database(if needed): On some distributions you may need to manually initialize the database cluster
+   Debian/Ubuntu: No action needed, the package handles this
+   RedHat/Fedora : sudo postgresql-setup --initdb
 
-vcpkg: This is the recommended package manager for easily installing the required C++ libraries (libpqxx and nlohmann-json).
+   4) Start and enable the service:
+     sudo systemctl start postgresql
+     sudo systemctl enable postgresql
 
-Setup and Installation
-1. Clone the Repository
-First, clone the project from its GitHub repository:
 
-Bash
+# macOS   
+    1) Homebrew(Recommended) : Install it from brew.sh
+    2) Install PostgreSQL: brew install postgresql
+    3) Start the Service: brew services start postgresql   
 
-git clone <repository_url>
-cd <repository_name>
-🛠️ Installation of Dependencies
-PostgreSQL
-🌐 Cross-Platform Installation
-Windows
 
-Download Installer: Go to the official PostgreSQL download page and get the interactive installer by Enterprise DB.
+# Installing  C++ compilers and Visual Studio Code
+1. Windows
+ . Install MinGW-w64:
+   Download the MinGW-w64 installer from the official site
+   During installation, select x86_64 architecture
+   Add the bin directory of MinGW-w64 installation to system's path environment variable
 
-Run Installer: The installer will guide you. Choose the components to install (PostgreSQL Server, pgAdmin, Stack Builder) and set a strong password for the postgres superuser.
+ . Visual Studio Code
+   Download and install VSCode
+   Go to the extension market place and install C/C++ extension from Microsoft
+   Install the C++ intellisense extension for code completion and navigation
 
-Start Server: The installer typically sets up PostgreSQL as a Windows Service, so it will start automatically.
+2. Linux
+   Install g++
+   Debian/Ubuntu sudo apt update && sudo apt install build-essential(This installs g++ and other tools)
 
-Linux (Debian/Ubuntu)
+  . Visual Studio Code
+   Download the .deb or .rpm package from the VSCode website and install it
+   Install the C/C++ and C++ intellisense extensions
 
-Update package lists: sudo apt update
+ 3. MacOS
+    Install XCode Command Line Tool
+    Open terminal and run xcode-select --install. This installs g++ and clang++
+    compilers
 
-Install PostgreSQL: sudo apt install postgresql postgresql-contrib
+    Visual Studio Code
+    Download and install Visual Studio Code from the website
+    Install the C/C++ and C++ intellisense extensions
 
-Start and enable the service:
 
-Bash
+# PostgreSQL Compatibility and C++ Compatibility
+- The most popular library is libpqxx
 
-sudo systemctl start postgresql
-sudo systemctl enable postgresql
-Linux (RedHat/Fedora)
+Installing libpqxx: Use vcpkg
+-------------------------------------------------------------------------------------------------------
+Windows: 
+# Install git(if not already installed) vcpkg is hosted in github, Git clone the repository
+# git clone https://github.com/microsoft/vcpkg.git
+# cd vcpkg
 
-Install PostgreSQL: sudo dnf install postgresql-server
+Run the Bootstrap Script to compile the vcpkg executable
+# .\bootstrap-vcpkg.bat
 
-Initialize the database cluster: sudo postgresql-setup --initdb
+Integrate with Visual Studio
+# .\vcpkg integrate install
 
-Start and enable the service:
+# Add vcpkg to SYSTEM Path
+# Open System Properties -> Environment Variables
+# Add the full path to the vcpkg folder
 
-Bash
+To install library client
+# .\vcpkg install libpq:x64-windows - installs static/dynamic libraries and headers to connect with PostgreSQL from C/C++
 
-sudo systemctl start postgresql
-sudo systemctl enable postgresql
-macOS
+Install the C++ wrapper(Optional using C++)
+# .\vcpkg install libpqxx:x64-windows
+-------------------------------------------------------------------------------------------------------
 
-Homebrew (Recommended): If not already installed, get it from brew.sh.
-
-Install PostgreSQL: brew install postgresql
-
-Start the service: brew services start postgresql
-
-C++ Compiler and Visual Studio Code
-💻 Visual Studio Code Setup
-Install the C/C++ and C++ Intellisense extensions from the VS Code Marketplace for a better development experience.
-
-Windows
-Install the MinGW-w64 compiler by downloading the installer from the official site. Remember to add the bin directory of the MinGW-w64 installation to your system's PATH environment variable.
-
+-------------------------------------------------------------------------------------------------------
 Linux
-Install g++ and other build tools with a single command:
-sudo apt update && sudo apt install build-essential
+1) Install Git and Build tools
+# sudo apt update
+# sudo apt install git build-essential curl zip unzip
 
-macOS
-Install the Xcode Command Line Tools, which include g++ and clang++ compilers:
-xcode-select --install
+2) Clone vcpkg
+# git clone https://github.com/microsoft/vcpkg.git
+# cd vcpkg
 
-📦 Installing C++ Libraries with vcpkg
-vcpkg is a crucial tool for managing the required libraries.
+3) Bootstrap vcpkg
+# ./bootstrap-vcpkg.sh
 
-1. Install vcpkg
-Windows
+4) Install Postgre SQL Client Library
+# ./vcpkg install libpq:x64-linux
 
-Bash
+5) Install libpqxx(C++ wrapper)
+# ./vcpkg install libpqxx:x64-linux
+-------------------------------------------------------------------------------------------------------
 
-git clone https://github.com/microsoft/vcpkg.git
-cd vcpkg
-.\bootstrap-vcpkg.bat
-.\vcpkg integrate install
-Add the vcpkg directory to your system's PATH.
+-------------------------------------------------------------------------------------------------------
+MacOS
+1) Install XCode Command Tool
+# xcode-select --install
 
-Linux
+2) Install git
+# brew install git
 
-Bash
+3) CLone and bootstrap vcpkg
+# git clone https://github.com/microsoft/vcpkg.git
+# cd vcpkg
+# ./bootstrap-vcpkg.sh
 
-git clone https://github.com/microsoft/vcpkg.git
-cd vcpkg
-./bootstrap-vcpkg.sh
-macOS
+4) Install PostgreSQL library client
+# ./vcpkg install libpq:x64-osx
 
-Bash
+5) Install libpqxx
+# ./vcpkg install libpqxx:x64-osx
 
-git clone https://github.com/microsoft/vcpkg.git
-cd vcpkg
-./bootstrap-vcpkg.sh
-2. Install Project Libraries
-Use vcpkg to install the necessary libraries for your operating system:
+-- To install  nlohmann-json(handle json objects)
+# vcpkg install nlohmann-json:x64-windows
 
-libpqxx (C++ wrapper for PostgreSQL)
+For linux and MacOS use:
+# ./vcpkg install nlohmann-json:x64-linux
+# ./vcpkg install nlohmann-json:x64-osx
 
-Windows: vcpkg install libpqxx:x64-windows
+------------------------------------------------------------------------------------------------------
 
-Linux: ./vcpkg install libpqxx:x64-linux
+# Create a PostgreSQL Database(Navigate to the cli-health assistant)
+# i) Login in as the default PostgreSQL superuser(postgres)
+# sudo -u postgres psql 
 
-macOS: ./vcpkg install libpqxx:x64-osx
+# ii) Create a New Role
+# Create the role: CREATE USER health WITH PASSWORD '2005';
 
-nlohmann-json (JSON library)
+# Create the database: CREATE DATABASE health_assistant WITH OWNER health
 
-Windows: vcpkg install nlohmann-json:x64-windows
+-- Granting Priviledge to the USER
+# GRANT ALL PRIVILEGES ON patients TO health;
 
-Linux: ./vcpkg install nlohmann-json:x64-linux
+-- Grant USAGE on the sequence for the 'id' column to the 'health' user
+# GRANT USAGE ON SEQUENCE patients_id_seq TO health;
 
-macOS: ./vcpkg install nlohmann-json:x64-osx
+-- verify Permissions
+# \z patients
 
-⚙️ Database Configuration
-1. Create the Database and User
-Navigate to the project's root directory and run the following commands in your terminal to set up the database and user.
+Connect to the new database
+# \c health_assistant
 
-Bash
+# Create tables: Patient table: CREATE TABLE patients ( id SERIAL PRIMARY KEY, name VARCHAR(255) NOT NULL, age INT, height DOUBLE PRECISION, condition VARCHAR(255), nutrition JSONB, fitness JSONB, mental_status JSONB, skincare JSONB );
 
-# Login as the postgres superuser
-sudo -u postgres psql
+Verify the table creation: \dt
 
-# Create a new user with a password
-CREATE USER health WITH PASSWORD '2005';
+To access the database:
+# sudo -u postgres psql -d health_assistant
 
-# Create the database and assign ownership
-CREATE DATABASE health_assistant WITH OWNER health;
+To exit the database
+# \quit
 
-# Connect to the new database
-\c health_assistant
+# CONNECTING TO THE DATABASE USING POSTGRESQL EXTENSION FROM VISUAL STUDIO CODE(Graphical User Interface)
+# The PostgreSQL extension for Visual Studio Code is a powerful tool:
+# 1. Install the extension in VSCode: Go to the extension tab and install PostgreSQL by microsoft(Database Client)
 
-# Create the patients table
-CREATE TABLE patients (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    age INT,
-    height DOUBLE PRECISION,
-    condition VARCHAR(255),
-    nutrition JSONB,
-    fitness JSONB,
-    mental_status JSONB,
-    skincare JSONB
-);
+# Connect to the Database
+# Click the PostgreSQL icon in the Activity Bar in the Left
+# Click Add connection button
+# Enter connection details(host, username, password, database name)
 
-# Grant privileges to the user
-GRANT ALL PRIVILEGES ON patients TO health;
-GRANT USAGE ON SEQUENCE patients_id_seq TO health;
 
-# Verify the table creation and permissions
-\dt
-\z patients
 
-# Exit the database shell
-\q
-2. Connect via VS Code Extension (Optional)
-You can also use the PostgreSQL extension in Visual Studio Code for a more graphical way to manage your database:
-
-Install the "PostgreSQL" extension by Microsoft.
-
-Click the PostgreSQL icon in the Activity Bar.
-
-Click "Add connection" and enter your database details (host, user, password, database name).
-
-▶️ Running the Application
+-------------------------------------------------------------------------------------------------------
 Compile the Project
-Navigate to the src directory and use the following command to compile the source files. Make sure the paths to your libraries are correct.
+Navigate to the src folder
+# Use the following command: g++ -o health_assistant main.cpp patient.cpp db_postgres.cpp nutrition.cpp fitness.cpp mental_status.cpp skincare.cpp utils.cpp -I/usr/include/postgresql -lpqxx -lpq
 
-Bash
+# 2. Run the command line application and perform operations through the CLI
+# Execute the compiled program by running the following: 
+  ./health_assistant
 
-g++ -o health_assistant main.cpp patient.cpp db_postgres.cpp nutrition.cpp fitness.cpp mental_status.cpp skincare.cpp utils.cpp -I/usr/include/postgresql -lpqxx -lpq
-Execute the Program
-Once compiled, run the application from the command line:
 
-Bash
+  
 
-./health_assistant
-You can now interact with the C++ Health Assistant through the command-line interface.
+
+
+
+
+
+
+
+
+
