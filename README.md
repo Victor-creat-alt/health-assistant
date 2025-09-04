@@ -166,10 +166,10 @@ For linux and MacOS use:
 ------------------------------------------------------------------------------------------------------
 
 # Create a PostgreSQL Database(Navigate to the cli-health assistant)
-i) Login in as the default PostgreSQL superuser(postgres)
+# i) Login in as the default PostgreSQL superuser(postgres)
 # sudo -u postgres psql 
 
-ii) Create a New Role
+# ii) Create a New Role
 # Create the role: CREATE USER health WITH PASSWORD '2005';
 
 # Create the database: CREATE DATABASE health_assistant WITH OWNER health
@@ -215,6 +215,10 @@ Navigate to the src folder
 # 2. Run the command line application and perform operations through the CLI
 # Execute the compiled program by running the following: 
   ./health_assistant
+
+
+
+
 
 
 
