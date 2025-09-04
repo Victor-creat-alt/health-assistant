@@ -318,6 +318,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - Check the [Issues](https://github.com/Victor-creat-alt/health-assistant/issues) page
 - Review the documentation in `Command Line Application.pdf`
+- Download a pdf extension(vscode-pdf) on Visual Studio Code to view the pdf file
 - Ensure all prerequisites are properly installed
 
 ## 📊 Health Data Structure
